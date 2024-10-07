@@ -38,47 +38,12 @@ Vp 		= 12.5 		! [m/dia] velocidade do passo de escavação
 revested0 	= 0 		! 0 - não reveste ultimo d0+Lp, 1 - reveste ultimo d0+Lp
 revesteface 	= 0 		! 0 - não reveste a face, 1 - reveste a face
 !
-! referente as galeiras transversais
-Re1 		= 2*Lp 		! [m] raio externo da galeria (deve multiplo de Lp)
-esp1		= 0.1		! [m] espessura do revestimento
-!Lp1 		= 1/3*Re1 	! [m] passo de escavação das galerias transversais (tem que ser multiplo de (d1/2+re))
-nd01 		= 2 		! [Lp1] dimensão não suportada (deve ser multiplo de Lp1)
-npi1 		= 3 		! [un] numero de passos escavados na primeira escavação
-Vp1 		= 12.5 		! [m/dia] velocidade de escavação
-escavagaleria 	= 0 		! escavação das galerias: 0 - não escava, 1 - escava
-revestegaleria 	= 0		! revestimento da galeria: 0 - não reveste, 1 - reveste
-pig1 		= 15 		! [un] numero de passos de escavação a partir da galeria no qual iniciará a escavação da galeria
-!
 ! referente ao restante do domínio
 l1 		= 10 		! [Re] comprimento do trecho não escavado (deve ser suficiente para captar os efeitos na última frente de escavação)
 l2 		= 100 		! [Lp] comprimento do trecho escavado
 d3 		= 20 		! [Re] altura do domínio (profundidade do eixo do túnel longitudinal)
 d4 		= 20 		! [Re] distância das bordas laterais do domínio até o eixo do tunel longitudinal
 d1 		= 4		! [Re] distância entre eixos dos túneis longitudinais
-!
-! distância adjacente a galeria com malha livre [Lp]
-!
-! Lp1 deve ter uma medida que se tenha n passos inteiros para se escavar, 
-! portanto: Lp1 = K*Re1 em que K = (d1/2-Re)/(n*Re1). 
-! o valor de d5 é ajustado de modo a ter uma discretização na região da galeria
-!
-!
-*IF,d1,EQ,16,THEN
-	d5		= 6			
-	Lp1		= 0.3387*re1
-*ELSEIF,d1,EQ,4,THEN
-	d5		= 2
-	Lp1		= 0.3*re1
-*ELSEIF,d1,EQ,3,THEN
-	d5		= 2
-	Lp1		= 0.25*re1
-*ELSEIF,d1,EQ,5,THEN
-	d5		= 2
-	Lp1		= 0.375*re1
-*ELSEIF,d1,EQ,8,THEN
-	d5		= 4
-	Lp1		= 0.3214*re1	
-*ENDIF
 !
 !
 !************************************************************!
@@ -179,11 +144,6 @@ tp 		= Lp/(Vp) 	! [dias] tempo para fazer um passo de escavação nos tuneis lon
 dtp 		= 0.5*tp	! [dias] incremento de tempo inicial dentro de cada passo
 dtpmax 		= dtp 		! [dias] incremento máximo de tempo dentro de cada passo
 !
-! Discretização do tempo durante os passos de escavação da galeria
-tp1 		= Lp1/(Vp1) 	! [dias] tempo para fazer um passo de escavação na galeria transversal
-dtp1		= 0.5*tp1	! [dias] incremento de tempo inicial dentro de cada passo
-dtpmax1		= dtp1		! [dias] incremento máximo de tempo dentro de cada passo
-!
 ! Discretização do tempo nos passos após a escavação
 tp2 		= 100 		! [dias] tempo de cada passo de solução após a escavação do túnel
 np2max 		= 30 		! [un] número máximo de passos de solução após a escavação do túnel
@@ -206,11 +166,8 @@ deltaumin	= 1E-8		! [adm] critério de convergência no tempo
 !************************************************************!
 tipoelem 	= 1 		! elementos fora da região da galeria: 1 - SOLID185, 2 - SOLID186
 formaint	= 0		! integração 0 - completa, 1 - reduzida
-tipoelem1 	= 2 		! elementos na região da galeria: 1 - SOLID185, 2 - SOLID186
-formaint1	= 0		! integração 0 - completa, 1 - reduzida
 !
 nLp		= 1		! [un] numero de elementos no passo escavado do túnel longitudinal
-nLp1		= 2 		! [un] numero de elementos no passo escavado da galeria
 nL1 		= 15 		! [un] numero de elementos ao longo do eixo do tunel longitudinal no trecho não escavado
 mL1 		= 1/5 		! [adm] taxa de crescimento
 nesp 		= 1 		! [un] numero de elementos na espessura do revestimento do tunel longitudinal
@@ -218,53 +175,32 @@ nCRe 		= 16 		! [un] numero de elementos na interface entre maciço e o revestim
 nRi 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical do maciço escavado no tunel longitudinal
 mRi 		= 0 		! [adm] taxa de crecimento
 nd3 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical oposta ao tunel longitudinal
-m4ga		= Lp1/1.3 	! [m] tamanho dos elementos na galeria
 !
 *IF,d1,EQ,16,THEN
 	nd1 		= 18		! 16 [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal (exemplo: 6, 8, 12)
 	md1 		= 20 		! 16 [adm] taxa de crescimento (exmeplo: 5, 8, 10)		
 	nd4 		= 5 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
 	md4 		= 1.5 		! [adm] taxa de crescimento
-	nd6		= nd1*2		! [un] número de elementos na vertical contígua a galeria transversal
-	md6		= md1		! [adm] taxa de crescimento
-	nd5		= 12		! 8 [un] numero de elementos no trecho adjacente a galeria transversal (exemplo: 6, 8)
-	md5		= 4		! 3 [adm] taxa de crescimento (exemplo: 2, 6)
 *ELSEIF,d1,EQ,4,THEN
 	nd1 		= 7		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
 	md1 		= 5 		! [adm] taxa de crescimento		
 	nd4 		= 12 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
 	md4 		= 6 		! [adm] taxa de crescimento
-	nd6		= nd1*2		! [un] número de elementos na vertical contígua a galeria transversal
-	md6		= md1		! [adm] taxa de crescimento
-	nd5		= 6		! [un] numero de elementos no trecho adjacente a galeria transversal
-	md5		= 4		! [adm] taxa de crescimento
 *ELSEIF,d1,EQ,5,THEN
 	nd1 		= 9		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
 	md1 		= 7 		! [adm] taxa de crescimento		
 	nd4 		= 12 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
 	md4 		= 6 		! [adm] taxa de crescimento
-	nd6		= nd1*2		! [un] número de elementos na vertical contígua a galeria transversal
-	md6		= md1		! [adm] taxa de crescimento
-	nd5		= 6		! [un] numero de elementos no trecho adjacente a galeria transversal
-	md5		= 4		! [adm] taxa de crescimento
 *ELSEIF,d1,EQ,8,THEN
 	nd1 		= 14		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
 	md1 		= 10 		! [adm] taxa de crescimento		
 	nd4 		= 12 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
-	md4 		= 6 		! [adm] taxa de crescimento
-	nd6		= nd1*2		! [un] número de elementos na vertical contígua a galeria transversal
-	md6		= md1		! [adm] taxa de crescimento
-	nd5		= 8		! [un] numero de elementos no trecho adjacente a galeria transversal
-	md5		= 6		! [adm] taxa de crescimento	
+	md4 		= 6 		! [adm] taxa de crescimento	
 *ELSEIF,d1,EQ,3,THEN
 	nd1 		= 5		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
 	md1 		= 5 		! [adm] taxa de crescimento		
 	nd4 		= 10 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
 	md4 		= 3 		! [adm] taxa de crescimento
-	nd6		= nd1*2		! [un] número de elementos na vertical contígua a galeria transversal
-	md6		= md1		! [adm] taxa de crescimento
-	nd5		= 6		! [un] numero de elementos no trecho adjacente a galeria transversal
-	md5		= 4		! [adm] taxa de crescimento
 *ENDIF	
 !
 !************************************************************!
@@ -294,10 +230,6 @@ nr	= 2	! Tipo de Newton-Raphson
 ! Tolerâncias durante os passos de escavação do túnel longitudinal
 tolf	= 1e-6	! tolerância para o resíduo (padrão 0.005)
 tolu	= 1e-4	! tolerância para o incremento de deslocamento (padrão 0.05)
-!
-! Tolerâncias durante os passos de escavação da galeria transversal
-tolf1	= 1e-6	! tolerância para o resíduo
-tolu1	= 1e-4	! tolerância para o incremento de deslocamento
 !
 ! Tolerâncias durante os passos após a construção do túnel
 tolf2	= 1e-6	! tolerância para o resíduo
