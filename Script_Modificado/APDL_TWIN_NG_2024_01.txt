@@ -29,9 +29,9 @@ FINISH
 !****_ 		2.1 Parâmetros geométricos		_****!
 !************************************************************!
 ! referente aos tuneis longitudinais
-Re 		= 1 		! [m] raio da interface entre o túnel e o maciço
+Rt 		= 1 		! [m] raio da interface entre o túnel e o maciço
 esp		= 0.1		! [m] espessura do revestimento
-Lp 		= 1/3*Re 	! [m] comprimento do passo de escavação
+Lp 		= 1/3*Rt 	! [m] comprimento do passo de escavação
 nd0 		= 2 		! [Lp] número de passos que representam a dimensão não suportada
 npi 		= 3 		! [Lp] número de passos escavados na primeira escavação
 Vp 		= 12.5 		! [m/dia] velocidade do passo de escavação
@@ -39,11 +39,11 @@ revested0 	= 0 		! 0 - não reveste ultimo d0+Lp, 1 - reveste ultimo d0+Lp
 revesteface 	= 0 		! 0 - não reveste a face, 1 - reveste a face
 !
 ! referente ao restante do domínio
-l1 		= 10 		! [Re] comprimento do trecho não escavado (deve ser suficiente para captar os efeitos na última frente de escavação)
+l1 		= 10 		! [Rt] comprimento do trecho não escavado (deve ser suficiente para captar os efeitos na última frente de escavação)
 l2 		= 100 		! [Lp] comprimento do trecho escavado
-d3 		= 20 		! [Re] altura do domínio (profundidade do eixo do túnel longitudinal)
-d4 		= 20 		! [Re] distância das bordas laterais do domínio até o eixo do tunel longitudinal
-d1 		= 4		! [Re] distância entre eixos dos túneis longitudinais
+d3 		= 20 		! [Rt] altura do domínio (profundidade do eixo do túnel longitudinal)
+d4 		= 20 		! [Rt] distância das bordas laterais do domínio até o eixo do tunel longitudinal
+d1 		= 4		! [Rt] distância entre eixos dos túneis longitudinais
 !
 !
 !************************************************************!
@@ -110,8 +110,7 @@ fck 		= 20		! [MPa] resistência característica do concreto (2)
 s 		= 0.2		! [adm] coef. que depende do tipo de concreto (2)
 ti 		= 0		! [dias] início do concreto (2)
 rh 		= 70		! [%] umidade relativa do ambiente (2)
-hf 		= (Re**2-(Re-esp)**2)/(Re-esp) ! [m] espessura fictítica (QUEVEDO, 2017, p. 84) (2)
-hf1		= (Re1**2-(Re1-esp1)**2)/(Re1-esp1)  ! [m] espessura fictítica da galeria (QUEVEDO, 2017, p. 84) (2)
+hf 		= (Rt**2-(Rt-esp)**2)/(Rt-esp) ! [m] espessura fictítica (QUEVEDO, 2017, p. 84) (2)
 ts 		= 7		! [dias] idade do concreto no início da secagem (2)
 t0		= 1		! [dias] idade do concreto no início do carregamento (2)
 tinf		= 3000		! [dias] tempo final da análise (2)
@@ -176,11 +175,11 @@ nRi 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical do maciço e
 mRi 		= 0 		! [adm] taxa de crecimento
 nd3 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical oposta ao tunel longitudinal
 !
-*IF,d1,EQ,16,THEN
-	nd1 		= 18		! 16 [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal (exemplo: 6, 8, 12)
-	md1 		= 20 		! 16 [adm] taxa de crescimento (exmeplo: 5, 8, 10)		
-	nd4 		= 5 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
-	md4 		= 1.5 		! [adm] taxa de crescimento
+*IF,d1,EQ,3,THEN
+	nd1 		= 5		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
+	md1 		= 5 		! [adm] taxa de crescimento		
+	nd4 		= 10 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
+	md4 		= 3 		! [adm] taxa de crescimento
 *ELSEIF,d1,EQ,4,THEN
 	nd1 		= 7		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
 	md1 		= 5 		! [adm] taxa de crescimento		
@@ -195,12 +194,12 @@ nd3 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical oposta ao tu
 	nd1 		= 14		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
 	md1 		= 10 		! [adm] taxa de crescimento		
 	nd4 		= 12 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
-	md4 		= 6 		! [adm] taxa de crescimento	
-*ELSEIF,d1,EQ,3,THEN
-	nd1 		= 5		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
-	md1 		= 5 		! [adm] taxa de crescimento		
-	nd4 		= 10 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
-	md4 		= 3 		! [adm] taxa de crescimento
+	md4 		= 6 		! [adm] taxa de crescimento
+*ELSEIF,d1,EQ,16,THEN
+	nd1 		= 18		! 16 [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal (exemplo: 6, 8, 12)
+	md1 		= 20 		! 16 [adm] taxa de crescimento (exmeplo: 5, 8, 10)		
+	nd4 		= 5 		! [un] numero de elementos na horizontal e vertical contigua a região próxima do tunel longitudinal
+	md4 		= 1.5 		! [adm] taxa de crescimento
 *ENDIF	
 !
 !************************************************************!
@@ -246,8 +245,8 @@ soleq	= 0	! 1 - calcula o equilibrio do maciço antes de iniciar
 !************************************************************!
 !****_ 		2.9 Titulo e nome dos arquivos  	_****!
 !************************************************************!
-! defini titulo na tela do Ansys
-/TITLE, Re=%Re% matmacico=%matmacico% E1=%E1% pr=%pr% matrev=%matrev% E2=%E2% vp=%vp%
+! definindo titulo na tela do Ansys
+/TITLE, Rt=%Rt% matmacico=%matmacico% Em=%E1% pr=%pr% matrev=%matrev% Er=%E2% vp=%vp%
 !
 ! define nome file.* para os arquivos da analise
 /FILNAME,file,0
@@ -268,37 +267,23 @@ soleq	= 0	! 1 - calcula o equilibrio do maciço antes de iniciar
 !************************************************************!
 !****_ 		3.1 Calculos iniciais			_****!
 !************************************************************!
-ri 		= re-esp		! [m] raio da face interna do revestimento dos tuneis longitudinais
-l1		= l1*Re    		! [m] comprimento do trecho não escavado
+ri 		= Rt-esp		! [m] raio da face interna do revestimento dos tuneis longitudinais
+l1		= l1*Rt    		! [m] comprimento do trecho não escavado
 l2		= l2*Lp			! [m] comprimento do trecho escavado
 lt 		= l1+l2 		! [m] comprimento total do modelo ao longo do eixo longitudinal
-d1 		= d1*Re			! [m] distância entre eixos dos túneis longitudinais (d1 = 16*Re ou d1 = 4*Re)
-d4 		= d4*re 		! [m] distância das bordas laterais do domínio até o eixo do tunel longitudinal
+d1 		= d1*Rt			! [m] distância entre eixos dos túneis longitudinais (d1 = 16*Rt ou d1 = 4*Rt)
+d4 		= d4*Rt 		! [m] distância das bordas laterais do domínio até o eixo do tunel longitudinal
 l3 		= (d1/2+d4)*2 		! [m] dimensão transversal do modelo
-d3		= d3*Re			! [m] altura do domínio (profundidade do eixo do túnel longitudinal)
+d3		= d3*Rt			! [m] altura do domínio (profundidade do eixo do túnel longitudinal)
 d5		= d5*Lp			! [m] distância adjacente a galeria com malha livre (exemplo: 1, 2, 4, 6)
 np	 	= l2/Lp 		! [un] numero total passos escavados nos tuneis longitudinais
 nesc 		= np-npi+1 		! [un] total de escavações ao longo do eixo do tunel longitudinal
 d0		= nd0*lp		! [m] dimensão não suportada (multiplo do passo)
 !
-ri1 		= re1-esp1 		! [m] raio da face interna do revestimento das galerias transversais
-d2 		= l2/2 			! [m] posição da galeria ao longo do eixo longitudinal
-d01		= nd01*Lp1		! [m] [m] dimensão não suportada da galeria (multiplo do passo)
-np1 		= (d1/2-re)/Lp1 	! [un] total de passos escavados nas galerias transversais
-nesc1 		= NINT(np1-npi1+1) 		! [un] total de escavações ao longo do eixo das galerias transversais
-!pig1 		= pig1+l2/(2*Lp)	! [un] numero de passos de escavação no túnel longitudinal no qual iniciará a escavação da galeria 1
-!
-nescinig		= np/2-npi+1+re1/Lp+pig1	! [un] numero da escavação em que se inicia a galeria
-!
 m1		= Lp/nLp 		! [m] tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado
 m9 		= m1 			! [m] tamanho dos elementos na região do tunel oposta a galeria
 !
 vpi = 3.14159265358979323846
-!
-! caso não haja escavação na galeria
-*IF,escavagaleria,EQ,0,THEN
-	nesc1 = 0
-*ENDIF
 !
 ! verificando se haverá análise após a construção do túnel
 analise2 = 0
@@ -324,20 +309,6 @@ analise2 = 0
 	KEYOPT,1,3,0
 	KEYOPT,1,6,0
 	KEYOPT,1,8,0
-*ENDIF
-!
-*IF,tipoelem1,EQ,1,THEN
-	ET,2,SOLID185  
-	KEYOPT,2,2,formaint1
-	KEYOPT,2,3,0
-	KEYOPT,2,6,0
-	KEYOPT,2,8,0
-*ELSEIF,tipoelem1,EQ,2,THEN
-	ET,2,SOLID186  
-	KEYOPT,2,2,formaint1
-	KEYOPT,2,3,0
-	KEYOPT,2,6,0
-	KEYOPT,2,8,0
 *ENDIF
 !
 !************************************************************!
