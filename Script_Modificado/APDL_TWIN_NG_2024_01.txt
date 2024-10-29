@@ -170,10 +170,10 @@ nLp		= 1		! [un] numero de elementos no passo escavado do túnel longitudinal
 nL1 		= 15 		! [un] numero de elementos ao longo do eixo do tunel longitudinal no trecho não escavado
 mL1 		= 1/5 		! [adm] taxa de crescimento
 nesp 		= 1 		! [un] numero de elementos na espessura do revestimento do tunel longitudinal
-nCRe 		= 16 		! [un] numero de elementos na interface entre maciço e o revestimento do tunel longitudinal (deve ser par)
-nRi 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical do maciço escavado no tunel longitudinal
+nCRt 		= 16 		! [un] numero de elementos na interface entre maciço e o revestimento do tunel longitudinal (deve ser par)
+nRi 		= nCRt/2 	! [un] numero de elementos na horizontal e vertical do maciço escavado no tunel longitudinal
 mRi 		= 0 		! [adm] taxa de crecimento
-nd3 		= nCRe/2 	! [un] numero de elementos na horizontal e vertical oposta ao tunel longitudinal
+nd3 		= nCRt/2 	! [un] numero de elementos na horizontal e vertical oposta ao tunel longitudinal
 !
 *IF,d1,EQ,3,THEN
 	nd1 		= 5		! [un] numero de elementos na horizontal e vertical contigua ao tunel longitudinal
@@ -517,15 +517,15 @@ NUMCMP,VOLU
 !****_ 		3.6 Divisões para a malha nas linhas 	_****!
 !************************************************************!
 !
-!! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte a frente da galeria)
-!!CSYS,0
-!LSEL,ALL
-!LSEL,S,LOC,Z,lt-0.01,lt-l2/2+re1+d5+0.01
-!LSEL,R,LOC,X,-d4,d1/2
-!LSEL,R,LOC,Y,0,d3
-!LESIZE,ALL,m1, , , , , , ,1
-!!
-!! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte anterior a galeria)
+! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado
+CSYS,0
+LSEL,ALL
+LSEL,S,LOC,Z,lt-0.01,lt-l2!/2+re1+d5+0.01
+LSEL,R,LOC,X,-d4,d1/2
+LSEL,R,LOC,Y,0,d3
+LESIZE,ALL,m1, , , , , , ,1
+!
+! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte anterior a galeria)
 !CSYS,0
 !LSEL,ALL
 !LSEL,S,LOC,Z,lt-l2/2-re1-d5-0.01,lt-l2/2-d2+re1+d5+0.01
@@ -534,52 +534,52 @@ NUMCMP,VOLU
 !LESIZE,ALL,m1, , , , , , ,1
 !!
 ! interface entre solo e revestimento do tunel longitudinal
-CSYS,1
+CSYS,1							! Coordenadas cilíndricas (z = eixo de rotação)
 LSEL,ALL
-LSEL,S,LOC,X,0.01,Rt
-LSEL,R,LOC,Y,1,180-1
-LSEL,R,LOC,Z,0,lt
-LSEL,U,LOC,Y,89,91
-LSEL,U,LOC,Z,lt-l2/2+re1-0.01,lt-l2/2-re1+0.01
-LESIZE,ALL, , ,nCRe, , , , ,1
+LSEL,S,LOC,X,0.01,Rt					! Selecionando as linhas (x = r) - por que 0.01?
+LSEL,R,LOC,Y,1,180-1					! Selecionando as linhas (y = theta) - por que 1 e 180-1?
+LSEL,R,LOC,Z,0,lt					! Selecionando todo o comprimento longitudinal do túnel
+!LSEL,U,LOC,Y,89,91					! Desselecionando 89 e 91 ?????
+!LSEL,U,LOC,Z,lt-l2/2+re1-0.01,lt-l2/2-re1+0.01		! Desselecionando ????
+LESIZE,ALL, , ,nCRt, , , , ,1				! Modificando todas as linhas selecionadas: número de divisões de elemento por linha NDIV= nCRt
 !
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,0.01,Rt
-LSEL,R,LOC,Y,1,180-1
-LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
-LSEL,U,LOC,Y,89,91
-LSEL,U,LOC,Y,0,90
-LESIZE,ALL, , ,nCRe, , , , ,1
-!
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,0.01,ri
-LSEL,R,LOC,Y,1,89
-LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
-LESIZE,ALL, , ,nCRe, , , , ,1
-!
-!! horizontal e vertical dentro do túnel longitudinal
 !CSYS,1
 !LSEL,ALL
-!LSEL,S,LOC,X,0,ri-0.01
-!LSEL,R,LOC,Y,0,180
-!LSEL,R,LOC,Z,0,lt
+!LSEL,S,LOC,X,0.01,Rt
+!LSEL,R,LOC,Y,1,180-1
+!LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
+!LSEL,U,LOC,Y,89,91
+!LSEL,U,LOC,Y,0,90
+!LESIZE,ALL, , ,nCRt, , , , ,1
+!!
+!CSYS,1
+!LSEL,ALL
+!LSEL,S,LOC,X,0.01,ri
+!LSEL,R,LOC,Y,1,89
+!LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
+!LESIZE,ALL, , ,nCRt, , , , ,1
+!
+! horizontal e vertical dentro do túnel longitudinal
+CSYS,1
+LSEL,ALL
+LSEL,S,LOC,X,0,ri-0.01
+LSEL,R,LOC,Y,0,180
+LSEL,R,LOC,Z,0,lt
 !LSEL,U,LOC,Z,lt-0.01,lt-l2/2+re1+0.01+d5
 !LSEL,U,LOC,Z,lt-l2/2-re1-0.01-d5,l1+0.01
 !LSEL,U,LOC,Z,l1-0.01,0.01
 !LSEL,U,LOC,Z,lt-l2/2+d5+re1-0.01,lt-l2/2+0.01
 !LSEL,U,LOC,Z,lt-l2/2-0.01,lt-l2/2-re1-d5+0.01
-!LESIZE,ALL, , ,nRi,mRi, , , ,1
-!!
-!! horizontal e vertical contigua ao tunel longitudinal
-!CSYS,1
-!LSEL,ALL
-!LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
-!LSEL,R,LOC,Y,0,180
-!LSEL,R,LOC,Z,0,l1+l2/2-re1-d5
-!LESIZE,ALL, , ,nd1,md1, , , ,1
-!!
+LESIZE,ALL, , ,nRi,mRi, , , ,1
+!
+! horizontal e vertical contigua ao tunel longitudinal
+CSYS,1
+LSEL,ALL
+LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
+LSEL,R,LOC,Y,0,180
+LSEL,R,LOC,Z,0,lt					! era l1+l2/2-re1-d5 no lugar de lt
+LESIZE,ALL, , ,nd1,md1, , , ,1
+!
 !CSYS,1
 !LSEL,ALL
 !LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
@@ -587,25 +587,25 @@ LESIZE,ALL, , ,nCRe, , , , ,1
 !LSEL,R,LOC,Z,l1+l2/2+re1+d5,lt
 !LESIZE,ALL, , ,nd1,md1, , , ,1
 !!
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
-LSEL,R,LOC,Y,90,180
-LSEL,R,LOC,Z,l1+l2/2,l1+l2/2
-LESIZE,ALL, , ,nd1,md1, , , ,1
-!
-LSEL,ALL
-LSEL,S,LOC,Y,89,91
-LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
-LREVERSE,ALL
-!
 !CSYS,1
 !LSEL,ALL
 !LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
-!LSEL,R,LOC,Y,89,90
+!LSEL,R,LOC,Y,90,180
+!LSEL,R,LOC,Z,l1+l2/2,l1+l2/2
+!LESIZE,ALL, , ,nd1,md1, , , ,1
+!
+!LSEL,ALL
+!LSEL,S,LOC,Y,89,91					! elementos que foram desselecionados acima
+!LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
+!LREVERSE,ALL
+!!
+!CSYS,1
+!LSEL,ALL
+!LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
+!LSEL,R,LOC,Y,89,90					! elementos que foram desselecionados acima
 !LSEL,R,LOC,Z,l1+l2/2+re1+d5,l1+l2/2-re1-d5
 !LREVERSE,ALL
-!! 
+! 
 ! Virando algumas linhas
 CSYS,1
 LSEL,ALL
