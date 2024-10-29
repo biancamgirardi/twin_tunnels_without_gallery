@@ -275,7 +275,6 @@ d1 		= d1*Rt			! [m] distância entre eixos dos túneis longitudinais (d1 = 16*R
 d4 		= d4*Rt 		! [m] distância das bordas laterais do domínio até o eixo do tunel longitudinal
 l3 		= (d1/2+d4)*2 		! [m] dimensão transversal do modelo
 d3		= d3*Rt			! [m] altura do domínio (profundidade do eixo do túnel longitudinal)
-d5		= d5*Lp			! [m] distância adjacente a galeria com malha livre (exemplo: 1, 2, 4, 6)
 np	 	= l2/Lp 		! [un] numero total passos escavados nos tuneis longitudinais
 nesc 		= np-npi+1 		! [un] total de escavações ao longo do eixo do tunel longitudinal
 d0		= nd0*lp		! [m] dimensão não suportada (multiplo do passo)
@@ -466,12 +465,12 @@ analise2 = 0
 !
 ! criando bloco e casca cilindrica do trecho não escavado
 BLC4,-d4,0,l3/2,d3,l1
-CYL4,0,0,ri,0,re,180,l1
+CYL4,0,0,ri,0,Rt,180,l1
 !
 ! criando bloco e casca cilindrica do trecho que será escavado
 WPOFFS,0,0,l1
 BLC4,-d4,0,l3/2,d3,l2
-CYL4,0,0,ri,0,re,180,l2
+CYL4,0,0,ri,0,Rt,180,l2
 !
 ! excluindo volumes em comum
 VPTN,ALL
@@ -496,81 +495,13 @@ VSEL,ALL
 VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 CSYS,1
-VSEL,U,LOC,X,0,re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 VSYMM,X,ALL, , ,0,1,0
-!
-! criando primeiro tunel transversal
-WPAVE,0,0,0
-WPCSYS,-1,0
-WPOFFS,0,0,lt-d2/2		
-WPRO,,,90
-CYL4,0,0,ri1,0,re1,180,d1/2
-!
-! criando plano de corte da galeria transversal
-CSYS,1
-VSEL,ALL
-VSEL,S,LOC,Z,l1,lt
-VSEL,R,LOC,X,ri/2,re
-ASEL,S,EXT
-CSYS,1
-ASEL,R,LOC,X,re,re
-ASEL,R,LOC,Z,l1+l2/2,l1+l2/2
-CM,A0,AREA
-!
-! cortando a galeria transversal
-CSYS,0
-ALLSEL,ALL
-VSEL,S,LOC,Z,lt-d2/2+re1,lt-d2/2-re1
-VSBA,ALL,A0
-!
-! deletando trecho da galeria transversal dentro do tunel longitudinal
-ALLSEL,ALL
-WPAVE,0,0,0
-WPCSYS,-1,0
-VSEL,S,LOC,Z,lt-d2/2,lt-d2/2
-VSEL,R,LOC,X,0,re
-VSEL,R,LOC,Y,0,re1
-VDELE,ALL,,,1
-!
-! Alterando posição da galeria para a metade de L2
-ALLSEL,ALL
-WPAVE,0,0,0
-WPCSYS,-1,0
-VSEL,S,LOC,Z,lt-d2/2,lt-d2/2
-VSEL,R,LOC,X,re,d1/2
-VSEL,R,LOC,Y,0,re1
-VGEN, ,ALL, , , , ,-d2/2, , ,1 
-!
-! cortando trecho do tunel principal
-VSEL,ALL
-WPAVE,0,0,0
-WPCSYS,-1,0
-WPOFFS,0,0,(lt-l2/2)+re1+d5		
-VSBW,ALL
-WPOFFS,0,0,-2*re1-2*d5
-VSBW,ALL
 !
 ! particionando outros volumes
 VSEL,ALL
 VPTN,ALL
-!
-! Cortando no meio da galeria
-VSEL,ALL
-WPAVE,0,0,0
-WPCSYS,-1,0
-VSEL,S,LOC,Z,lt-l2/2-d5,lt-l2/2+d5
-WPOFFS,0,0,lt-l2/2
-VSBW,ALL
-!
-! Deletando os volumes na metade da galeria
-VSEL,ALL
-WPAVE,0,0,0
-WPCSYS,-1,0
-VSEL,S,LOC,Z,l1+l2/2,l1+l2/2-re1-d5
-VSEL,R,LOC,X,-d1/2,d1/2
-VSEL,R,LOC,Y,0,d1/2
-VDELE,ALL,,,1
 !
 ! juntando pontos duplicados
 ALLSEL,ALL
@@ -586,26 +517,26 @@ NUMCMP,VOLU
 !****_ 		3.6 Divisões para a malha nas linhas 	_****!
 !************************************************************!
 !
-! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte a frente da galeria)
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,Z,lt-0.01,lt-l2/2+re1+d5+0.01
-LSEL,R,LOC,X,-d4,d1/2
-LSEL,R,LOC,Y,0,d3
-LESIZE,ALL,m1, , , , , , ,1
-!
-! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte anterior a galeria)
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,Z,lt-l2/2-re1-d5-0.01,lt-l2/2-d2+re1+d5+0.01
-LSEL,R,LOC,X,-d4,d1/2
-LSEL,R,LOC,Y,0,d3
-LESIZE,ALL,m1, , , , , , ,1
-!
+!! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte a frente da galeria)
+!!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,Z,lt-0.01,lt-l2/2+re1+d5+0.01
+!LSEL,R,LOC,X,-d4,d1/2
+!LSEL,R,LOC,Y,0,d3
+!LESIZE,ALL,m1, , , , , , ,1
+!!
+!! tamanho do elemento ao longo do eixo do tunel longitudinal no trecho escavado (parte anterior a galeria)
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,Z,lt-l2/2-re1-d5-0.01,lt-l2/2-d2+re1+d5+0.01
+!LSEL,R,LOC,X,-d4,d1/2
+!LSEL,R,LOC,Y,0,d3
+!LESIZE,ALL,m1, , , , , , ,1
+!!
 ! interface entre solo e revestimento do tunel longitudinal
 CSYS,1
 LSEL,ALL
-LSEL,S,LOC,X,0.01,re
+LSEL,S,LOC,X,0.01,Rt
 LSEL,R,LOC,Y,1,180-1
 LSEL,R,LOC,Z,0,lt
 LSEL,U,LOC,Y,89,91
@@ -614,7 +545,7 @@ LESIZE,ALL, , ,nCRe, , , , ,1
 !
 CSYS,1
 LSEL,ALL
-LSEL,S,LOC,X,0.01,re
+LSEL,S,LOC,X,0.01,Rt
 LSEL,R,LOC,Y,1,180-1
 LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
 LSEL,U,LOC,Y,89,91
@@ -628,37 +559,37 @@ LSEL,R,LOC,Y,1,89
 LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
 LESIZE,ALL, , ,nCRe, , , , ,1
 !
-! horizontal e vertical dentro do túnel longitudinal
+!! horizontal e vertical dentro do túnel longitudinal
+!CSYS,1
+!LSEL,ALL
+!LSEL,S,LOC,X,0,ri-0.01
+!LSEL,R,LOC,Y,0,180
+!LSEL,R,LOC,Z,0,lt
+!LSEL,U,LOC,Z,lt-0.01,lt-l2/2+re1+0.01+d5
+!LSEL,U,LOC,Z,lt-l2/2-re1-0.01-d5,l1+0.01
+!LSEL,U,LOC,Z,l1-0.01,0.01
+!LSEL,U,LOC,Z,lt-l2/2+d5+re1-0.01,lt-l2/2+0.01
+!LSEL,U,LOC,Z,lt-l2/2-0.01,lt-l2/2-re1-d5+0.01
+!LESIZE,ALL, , ,nRi,mRi, , , ,1
+!!
+!! horizontal e vertical contigua ao tunel longitudinal
+!CSYS,1
+!LSEL,ALL
+!LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
+!LSEL,R,LOC,Y,0,180
+!LSEL,R,LOC,Z,0,l1+l2/2-re1-d5
+!LESIZE,ALL, , ,nd1,md1, , , ,1
+!!
+!CSYS,1
+!LSEL,ALL
+!LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
+!LSEL,R,LOC,Y,0,180
+!LSEL,R,LOC,Z,l1+l2/2+re1+d5,lt
+!LESIZE,ALL, , ,nd1,md1, , , ,1
+!!
 CSYS,1
 LSEL,ALL
-LSEL,S,LOC,X,0,ri-0.01
-LSEL,R,LOC,Y,0,180
-LSEL,R,LOC,Z,0,lt
-LSEL,U,LOC,Z,lt-0.01,lt-l2/2+re1+0.01+d5
-LSEL,U,LOC,Z,lt-l2/2-re1-0.01-d5,l1+0.01
-LSEL,U,LOC,Z,l1-0.01,0.01
-LSEL,U,LOC,Z,lt-l2/2+d5+re1-0.01,lt-l2/2+0.01
-LSEL,U,LOC,Z,lt-l2/2-0.01,lt-l2/2-re1-d5+0.01
-LESIZE,ALL, , ,nRi,mRi, , , ,1
-!
-! horizontal e vertical contigua ao tunel longitudinal
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,re+0.01,d1/2-0.01
-LSEL,R,LOC,Y,0,180
-LSEL,R,LOC,Z,0,l1+l2/2-re1-d5
-LESIZE,ALL, , ,nd1,md1, , , ,1
-!
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,re+0.01,d1/2-0.01
-LSEL,R,LOC,Y,0,180
-LSEL,R,LOC,Z,l1+l2/2+re1+d5,lt
-LESIZE,ALL, , ,nd1,md1, , , ,1
-!
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,re+0.01,d1/2-0.01
+LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
 LSEL,R,LOC,Y,90,180
 LSEL,R,LOC,Z,l1+l2/2,l1+l2/2
 LESIZE,ALL, , ,nd1,md1, , , ,1
@@ -668,29 +599,29 @@ LSEL,S,LOC,Y,89,91
 LSEL,R,LOC,Z,lt-l2/2,lt-l2/2
 LREVERSE,ALL
 !
-CSYS,1
-LSEL,ALL
-LSEL,S,LOC,X,re+0.01,d1/2-0.01
-LSEL,R,LOC,Y,89,90
-LSEL,R,LOC,Z,l1+l2/2+re1+d5,l1+l2/2-re1-d5
-LREVERSE,ALL
-! 
+!CSYS,1
+!LSEL,ALL
+!LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
+!LSEL,R,LOC,Y,89,90
+!LSEL,R,LOC,Z,l1+l2/2+re1+d5,l1+l2/2-re1-d5
+!LREVERSE,ALL
+!! 
 ! Virando algumas linhas
 CSYS,1
 LSEL,ALL
-LSEL,S,LOC,X,re+0.01,d1/2-0.01
+LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
 LSEL,R,LOC,Y,0,0.01
 LSEL,R,LOC,Z,0,l1
 LREVERSE,ALL
 !
 LSEL,ALL
-LSEL,S,LOC,X,re+1,d1/2-0.01
+LSEL,S,LOC,X,Rt+1,d1/2-0.01
 LSEL,R,LOC,Y,0,0.01
 LSEL,R,LOC,Z,lt,lt
 LREVERSE,ALL
 !
 LSEL,ALL
-LSEL,S,LOC,X,re+0.01,d1/2-0.01
+LSEL,S,LOC,X,Rt+0.01,d1/2-0.01
 LSEL,R,LOC,Y,179,181
 LSEL,R,LOC,Z,0,l1
 LREVERSE,ALL
@@ -743,7 +674,7 @@ LESIZE,ALL, , ,nd3, , , , ,1
 CSYS,0
 LSEL,ALL
 LSEL,S,LOC,X,d1/2+0.01,d1/2-0.01
-LSEL,R,LOC,Y,re,d1/2-0.01
+LSEL,R,LOC,Y,Rt,d1/2-0.01
 LSEL,R,LOC,Z,0,lt
 LSEL,U,LOC,Z,lt-l2/2,lt-l2/2
 LESIZE,ALL, , ,nd3, , , , ,1
@@ -779,47 +710,47 @@ LESIZE,ALL, , ,nd3, , , , ,1
 ! numero de elementos na espessura do revestimento do tunel longitudinal
 CSYS,0
 LSEL,ALL
-LSEL,S,LOC,X,ri+0.01,re-0.01
+LSEL,S,LOC,X,ri+0.01,Rt-0.01
 LSEL,R,LOC,Y,0,0.01
 LSEL,R,LOC,Z,0,lt
 LESIZE,ALL, , ,nesp, , , , ,1
 !
 CSYS,0
 LSEL,ALL
-LSEL,S,LOC,X,-ri-0.01,-re+0.01
+LSEL,S,LOC,X,-ri-0.01,-Rt+0.01
 LSEL,R,LOC,Y,0,0.01
 LSEL,R,LOC,Z,0,lt
 LESIZE,ALL, , ,nesp, , , , ,1
 !
-! tamanho dos elementos na região do tunel oposta a galeria
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,X,-re-0.01,-d4
-LSEL,R,LOC,Y,0,d3
-LSEL,R,LOC,Z,lt-l2/2+(re1+d5)/2,lt-l2/2+(re1+d5)/2
-LESIZE,ALL,m9, , , , , , ,1
-!
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,X,-re-0.01,-d4
-LSEL,R,LOC,Y,0,d3
-LSEL,R,LOC,Z,lt-l2/2-(re1+d5)/2,lt-l2/2-(re1+d5)/2
-LESIZE,ALL,m9, , , , , , ,1
-!
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,X,0,d1/2
-LSEL,R,LOC,Y,d1/2,d3
-LSEL,R,LOC,Z,lt-l2/2+(re1+d5)/2,lt-l2/2+(re1+d5)/2
-LESIZE,ALL,m9, , , , , , ,1
-!
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,X,0,d1/2
-LSEL,R,LOC,Y,d1/2,d3
-LSEL,R,LOC,Z,lt-l2/2-(re1+d5)/2,lt-l2/2-(re1+d5)/2
-LESIZE,ALL,m9, , , , , , ,1
-!
+!! tamanho dos elementos na região do tunel oposta a galeria
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,X,-Rt-0.01,-d4
+!LSEL,R,LOC,Y,0,d3
+!LSEL,R,LOC,Z,lt-l2/2+(re1+d5)/2,lt-l2/2+(re1+d5)/2
+!LESIZE,ALL,m9, , , , , , ,1
+!!
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,X,-Rt-0.01,-d4
+!LSEL,R,LOC,Y,0,d3
+!LSEL,R,LOC,Z,lt-l2/2-(re1+d5)/2,lt-l2/2-(re1+d5)/2
+!LESIZE,ALL,m9, , , , , , ,1
+!!
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,X,0,d1/2
+!LSEL,R,LOC,Y,d1/2,d3
+!LSEL,R,LOC,Z,lt-l2/2+(re1+d5)/2,lt-l2/2+(re1+d5)/2
+!LESIZE,ALL,m9, , , , , , ,1
+!!
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,X,0,d1/2
+!LSEL,R,LOC,Y,d1/2,d3
+!LSEL,R,LOC,Z,lt-l2/2-(re1+d5)/2,lt-l2/2-(re1+d5)/2
+!LESIZE,ALL,m9, , , , , , ,1
+!!
 ! elementos ao longo do eixo do tunel longitudinal no trecho não escavado
 CSYS,0
 LSEL,ALL
@@ -837,27 +768,27 @@ LSEL,R,LOC,Y,0,d3
 LREVERSE,ALL
 LESIZE,ALL, , ,nL1,mL1, , , ,1
 !
-! Adjacente ao a galeria transversal
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,Z,lt-l2/2+re1+d5-0.01,lt-l2/2+re1+0.01
-LSEL,R,LOC,X,re-0.01,d1/2
-LSEL,R,LOC,Y,0,0.01
-LESIZE,ALL, , ,nd5,md5, , , ,1
-!
-! Vertical acima da galeria transversal
-CSYS,0
-LSEL,ALL
-LSEL,S,LOC,Z,lt-l2/2,lt-l2/2
-LSEL,R,LOC,X,d1/2,d1/2
-LSEL,R,LOC,Y,re1,d1/2
-LESIZE,ALL, , ,nd6,md6, , , ,1
-!
+!! Adjacente ao a galeria transversal
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,Z,lt-l2/2+re1+d5-0.01,lt-l2/2+re1+0.01
+!LSEL,R,LOC,X,Rt-0.01,d1/2
+!LSEL,R,LOC,Y,0,0.01
+!LESIZE,ALL, , ,nd5,md5, , , ,1
+!!
+!! Vertical acima da galeria transversal
+!CSYS,0
+!LSEL,ALL
+!LSEL,S,LOC,Z,lt-l2/2,lt-l2/2
+!LSEL,R,LOC,X,d1/2,d1/2
+!LSEL,R,LOC,Y,re1,d1/2
+!LESIZE,ALL, , ,nd6,md6, , , ,1
+!!
 CSYS,0
 LSEL,ALL
 LSEL,S,LOC,Z,lt-l2/2,lt-l2/2
 LSEL,R,LOC,X,0,d1/2
-LSEL,R,LOC,Y,re,d1/2-0.01
+LSEL,R,LOC,Y,Rt,d1/2-0.01
 LREVERSE,ALL
 !
 !
@@ -871,7 +802,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,d1/2
@@ -881,7 +812,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -895,7 +826,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,-d1/2
@@ -905,7 +836,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -938,7 +869,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2-re1-d5,lt-l2
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,d1/2
@@ -948,7 +879,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2-re1-d5,lt-l2
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -962,7 +893,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2-re1-d5,lt-l2
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,-d1/2
@@ -972,7 +903,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2-re1-d5,lt-l2
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -1005,7 +936,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,0,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,d1/2
@@ -1015,7 +946,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,0,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -1029,7 +960,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,0,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,-d1/2
@@ -1039,7 +970,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,0,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -1072,7 +1003,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,X,-d1/2
@@ -1082,7 +1013,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 ASEL,S,EXT
 ASEL,R,LOC,Y,d1/2
@@ -1092,15 +1023,15 @@ CMSEL,A,A2,AREA
 ACCAT,ALL
 !
 !ALLSEL,ALL
-!VSEL,S,LOC,X,-re,-d1/2
-!VSEL,R,LOC,Y,re,d1/2
+!VSEL,S,LOC,X,-Rt,-d1/2
+!VSEL,R,LOC,Y,Rt,d1/2
 !VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1-d5
 !ASEL,S,EXT
 !ASEL,R,LOC,X,-d1/2
 !CM,A1,AREA
 !ALLSEL,ALL
-!VSEL,S,LOC,X,-re,-d1/2
-!VSEL,R,LOC,Y,re,d1/2
+!VSEL,S,LOC,X,-Rt,-d1/2
+!VSEL,R,LOC,Y,Rt,d1/2
 !VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1-d5
 !ASEL,S,EXT
 !ASEL,R,LOC,Y,d1/2
@@ -1155,7 +1086,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VA1,VOLUME
 !
@@ -1165,7 +1096,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VA2,VOLUME
 !
@@ -1192,7 +1123,7 @@ CM,VA5,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,0,180
 VSEL,R,LOC,Z,lt,lt-l2/2+re1+d5
 CMSEL,U,VA5,VOLUME
@@ -1211,7 +1142,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2-re1-d5,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VB1,VOLUME
 !
@@ -1221,7 +1152,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2-re1-d5,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VB2,VOLUME
 !
@@ -1248,7 +1179,7 @@ CM,VB5,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,0,180
 VSEL,R,LOC,Z,l1,l1+l2/2-re1-d5
 CMSEL,U,VB5,VOLUME
@@ -1268,7 +1199,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,0,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VC1,VOLUME
 !
@@ -1278,7 +1209,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,0,l1
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VC2,VOLUME
 !
@@ -1305,7 +1236,7 @@ CM,VC5,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,0,180
 VSEL,R,LOC,Z,0,l1
 CMSEL,U,VC5,VOLUME
@@ -1325,7 +1256,7 @@ VSEL,S,LOC,X,0,d1/2
 VSEL,R,LOC,Y,re1,d1/2
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2!-re1-d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VD1,VOLUME
 !
@@ -1335,7 +1266,7 @@ VSEL,S,LOC,X,0,-d1/2
 VSEL,R,LOC,Y,0,d1/2
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2!-re1-d5
 CSYS,1
-VSEL,U,LOC,X,0,Re
+VSEL,U,LOC,X,0,Rt
 CSYS,0
 CM,VD2,VOLUME
 !
@@ -1369,7 +1300,7 @@ CM,VD52,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,0,90
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2-re1-d5
 CMSEL,U,VD51,VOLUME
@@ -1377,7 +1308,7 @@ CM,VD61,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,90,180
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2-re1-d5
 CMSEL,U,VD52,VOLUME
@@ -1385,14 +1316,14 @@ CM,VD62,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,0,4*ri1/(3*vpi)
 VSEL,R,LOC,Z,lt-l2/2+re1,lt-l2/2-re1
 CM,VD7,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,0,re1
 VSEL,R,LOC,Z,lt-l2/2+re1,lt-l2/2-re1
 CMSEL,U,VD7,VOLUME
@@ -1414,7 +1345,7 @@ CMSEL,S,VD7,VOLU
 CMSEL,A,VD8,VOLU
 CSYS,0
 WPAVE,0,0,0
-WPAVE,re,0,l1+l2/2
+WPAVE,Rt,0,l1+l2/2
 WPRO,,,90
 *DO,i,1,np1-1,1
 	WPOFFS,0,0,Lp1
@@ -1453,7 +1384,7 @@ CM,VD52,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,0,90
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2!-re1!-d5
 CMSEL,U,VD51,VOLUME
@@ -1461,7 +1392,7 @@ CM,VD61,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,90,180
 VSEL,R,LOC,Z,lt-l2/2+re1+d5,lt-l2/2!-re1!-d5
 CMSEL,U,VD52,VOLUME
@@ -1469,14 +1400,14 @@ CM,VD62,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,0,4*ri1/(3*vpi)
 VSEL,R,LOC,Z,lt-l2/2+re1,lt-l2/2!-re1
 CM,VD7,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,0,re1
 VSEL,R,LOC,Z,lt-l2/2+re1,lt-l2/2!-re1
 CMSEL,U,VD7,VOLUME
@@ -1584,15 +1515,15 @@ NUMCMP,ALL
 ! criando os volumes da região espelhada da galeria
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,re1,d1/2
 VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1-d5
 CM,VE1,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,-re,-d1/2
-VSEL,R,LOC,Y,re,d1/2
+VSEL,S,LOC,X,-Rt,-d1/2
+VSEL,R,LOC,Y,Rt,d1/2
 VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1-d5
 CM,VE2,VOLUME
 !
@@ -1612,7 +1543,7 @@ CM,VE52,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,0,90
 VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1-d5
 CMSEL,U,VE51,VOLUME
@@ -1620,7 +1551,7 @@ CM,VE61,VOLUME
 !
 CSYS,1
 ALLSEL,ALL
-VSEL,S,LOC,X,0,re
+VSEL,S,LOC,X,0,Rt
 VSEL,R,LOC,Y,90,180
 VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1-d5
 CMSEL,U,VE52,VOLUME
@@ -1628,14 +1559,14 @@ CM,VE62,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,0,4*ri1/(3*vpi)
 VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1
 CM,VE7,VOLUME
 !
 CSYS,0
 ALLSEL,ALL
-VSEL,S,LOC,X,re,d1/2
+VSEL,S,LOC,X,Rt,d1/2
 VSEL,R,LOC,Y,0,re1
 VSEL,R,LOC,Z,lt-l2/2,lt-l2/2-re1
 CMSEL,U,VD7,VOLUME
@@ -1698,19 +1629,19 @@ ALLSEL,ALL
 LOCAL,11,1,0,0,0
 ESEL,ALL
 ESEL,S,CENT,Z,lt,l1
-ESEL,R,CENT,X,ri,re
+ESEL,R,CENT,X,ri,Rt
 ESEL,R,CENT,Y,0,180
 CM,Casca1,ELEM
 !
 ! gerando grupo de elementos com o revestimento das galerias transversais
-LOCAL,12,1,re,0,lt-l2/2,0,0,90
+LOCAL,12,1,Rt,0,lt-l2/2,0,0,90
 VSEL,ALL
 VSEL,S,LOC,Z,-esp,d1/2
 VSEL,R,LOC,X,0,re1
 VSEL,R,LOC,Y,0,180
 CM,VG1,VOLUME
 ESLV,S
-ESEL,R,CENT,Z,-re,d1/2-re
+ESEL,R,CENT,Z,-Rt,d1/2-Rt
 ESEL,R,CENT,X,ri1,re1-0.001
 ESEL,R,CENT,Y,0,180
 CM,Casca2,ELEM
@@ -1860,7 +1791,7 @@ ESEL,ALL
 fi=0
 ff=npi*Lp
 ESEL,S,CENT,Z,fi,ff
-ESEL,R,CENT,X,0,re
+ESEL,R,CENT,X,0,Rt
 ESEL,R,CENT,Y,0,180
 CM,Lesc %i%,ELEM
 CMSEL,S,Lesc %i%,ELEM
@@ -1871,7 +1802,7 @@ CMSEL,S,Lesc %i%,ELEM
 	fi=ff
 	ff=(i-1)*Lp+npi*lp
 	ESEL,S,CENT,Z,fi,ff
-	ESEL,R,CENT,X,0,re
+	ESEL,R,CENT,X,0,Rt
 	ESEL,R,CENT,Y,0,180
 	CM,Lesc %i%,ELEM
 	CMSEL,S,Lesc %i%,ELEM
@@ -1886,7 +1817,7 @@ CMSEL,S,Lesc %i%,ELEM
 		ff = (i-1)*lp+npi*lp-(lp+d0)
 		ESEL,ALL
 		ESEL,S,CENT,Z,fi,ff
-		ESEL,R,CENT,X,ri,re
+		ESEL,R,CENT,X,ri,Rt
 		ESEL,R,CENT,Y,0,180
 		ESEL,R,MAT,,2
 		MPCHG,i,ALL
@@ -1901,7 +1832,7 @@ CMSEL,S,Lesc %i%,ELEM
 				fi=l2-lp-d0
 				ff=l2
 				ESEL,S,CENT,Z,fi,ff
-				ESEL,R,CENT,X,ri,re
+				ESEL,R,CENT,X,ri,Rt
 				ESEL,R,CENT,Y,0,180
 				ESEL,R,MAT,,2
 				MPCHG,i,ALL
@@ -1913,7 +1844,7 @@ CMSEL,S,Lesc %i%,ELEM
 				ff=l2+(lp)
 				ESEL,ALL
 				ESEL,S,CENT,Z,fi,ff
-				ESEL,R,CENT,X,0,re
+				ESEL,R,CENT,X,0,Rt
 				ESEL,R,CENT,Y,0,180
 				CM,soloface,ELEM
 				CMSEL,S,soloface,ELEM
@@ -1922,7 +1853,7 @@ CMSEL,S,Lesc %i%,ELEM
 				ff=l2+lp
 				ESEL,ALL
 				ESEL,S,CENT,Z,fi,ff
-				ESEL,R,CENT,X,0,re
+				ESEL,R,CENT,X,0,Rt
 				ESEL,R,CENT,Y,0,180
 				EGEN,2,0,all,all,1,1,,,,0,0,0
 				NUMMRG,node, , , ,LOW
@@ -1937,7 +1868,7 @@ CMSEL,S,Lesc %i%,ELEM
 !
 ! criando grupo de elementos escavados
 ESEL,S,CENT,Z,0,l2
-ESEL,R,CENT,X,0,re
+ESEL,R,CENT,X,0,Rt
 ESEL,R,CENT,Y,0,180
 CM,esctotallongitudinal,ELEM
 CSYS,0
@@ -1949,8 +1880,8 @@ CSYS,0
 !
 ! Primeira escavação da primeira galeria
 i = 1
-LOCAL,12,1,re,0,lt-l2/2,0,0,90
-fi=-re
+LOCAL,12,1,Rt,0,lt-l2/2,0,0,90
+fi=-Rt
 ff=npi1*Lp1
 ESEL,ALL
 CMSEL,S,VG1,VOLUME
@@ -1986,12 +1917,12 @@ CMSEL,S,T1esc %i%,ELEM
 		*IF,matrev,NE,0,THEN
 			! criando grupos com os elementos revestidos do passo i
 			*IF,i,EQ,2,THEN
-				fi=-re
+				fi=-Rt
 			*ELSE
 				fi=(i-2)*Lp1
 			*ENDIF
 			*IF,i,EQ,nesc1,THEN
-				ff=l2/2-re
+				ff=l2/2-Rt
 			*ELSE
 				ff=npi1*Lp1+(i-2)*Lp1-d01
 			*ENDIF
@@ -2107,7 +2038,7 @@ uatual = 0
 LOCAL,11,1,0,0,lt,0,0,0,0
 CSYS,11,
 ALLSEL,ALL
-NSEL,S,LOC,X,Re-0.01,Re+0.01
+NSEL,S,LOC,X,Rt-0.01,Rt+0.01
 NSEL,R,LOC,Y,teta-0.01,teta+0.01
 NSEL,R,LOC,Z,0
 NSLE,R,CORNER
@@ -2407,7 +2338,7 @@ JPEG,TMOD,1
 /RGB,INDEX,100,100,100,0
 /RGB,INDEX,0,0,0,15
 /AXLAB,X,t
-/AXLAB,Y,u(r=Re,z=Lt)
+/AXLAB,Y,u(r=Rt,z=Lt)
 /XRANGE,0,npi*tp+tp*(nesc-1)+tad1+np2*tp2
 *VSCFUN,criteriomax,max,criterio(1,3)
 /YRANGE,0,criteriomax*1.2
@@ -2436,7 +2367,7 @@ JPEG,TMOD,1
 LOCAL,11,1,0,0,lt,0,0,0,0
 CSYS,11,
 ALLSEL,ALL
-NSEL,R,LOC,X,Re-0.01,Re+0.01
+NSEL,R,LOC,X,Rt-0.01,Rt+0.01
 NSEL,R,LOC,Y,teta-0.01,teta+0.01
 NSLE,R,CORNER
 CSYS,0
@@ -2463,7 +2394,7 @@ nanalises = 0
 ! criando vetor de coordenadas
 *VGET,n_sel(1),NODE,1,NSEL
 *VGET,coordz(1),NODE,1,LOC,z
-*VOPER,coordz(1),coordz(1),MULT,1/Re
+*VOPER,coordz(1),coordz(1),MULT,1/Rt
 !
 ! Preenchendo o convergence e pressure com as coordenadas
 *VMASK,n_sel(1)				! usa como mascara os nós selecionados
@@ -2487,7 +2418,7 @@ nanalises = 0
 	! Preenchendo o array com os deslocamentos radiais e tensões radiais
 	*VMASK,n_sel(1)
 	*VGET,u_teta(1),NODE,1,U,direcao
-	*VOPER,u_teta(1),u_teta(1),MULT,-1/Re*100
+	*VOPER,u_teta(1),u_teta(1),MULT,-1/Rt*100
 	!
 	*VMASK,n_sel(1)
 	*VGET,s_teta(1),NODE,1,S,direcao
@@ -2512,9 +2443,9 @@ nanalises = 0
 ! formatando grafico de convergencia
 /RGB,INDEX,100,100,100,0
 /RGB,INDEX,0,0,0,15
-/AXLAB,X,Y/Re
-/AXLAB,Y,U=-u(r=Re)/Re (%)
-/XRANGE,0,Lt/Re
+/AXLAB,X,Y/Rt
+/AXLAB,Y,U=-u(r=Rt)/Rt (%)
+/XRANGE,0,Lt/Rt
 /YRANGE,umaximofinal*1.2,0
 /GROPT,DIVY,20
 /GROPT,DIVX,10
@@ -2543,9 +2474,9 @@ nanalises = 0
 ! formatando grafico do pressure
 /RGB,INDEX,100,100,100,0
 /RGB,INDEX,0,0,0,15
-/AXLAB,X,Y/Re
+/AXLAB,X,Y/Rt
 /AXLAB,Y,Sx (MPa)
-/XRANGE,0,Lt/Re
+/XRANGE,0,Lt/Rt
 /YRANGE,smaximofinal*1.2,sminimofinal*1.2
 /GROPT,DIVY,20
 /GROPT,DIVX,10
@@ -2594,7 +2525,7 @@ PARSAV,SCALAR,parametros,txt
 !
 !
 ! selecionando os nós na interface entre revestimento e o maciço
-LOCAL,12,1,re,0,lt-l2/2,0,0,90
+LOCAL,12,1,Rt,0,lt-l2/2,0,0,90
 CSYS,12,
 ALLSEL,ALL
 CMSEL,S,VD8,VOLU
